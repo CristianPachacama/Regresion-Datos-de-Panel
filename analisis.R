@@ -1,6 +1,10 @@
 library(readxl)
 library(forecast)
+library(foreign)
+library(car)
+library(easyGgplot2)
 #Carga de Datos
+getwd()
 datos <- read_excel("datos.xlsx")
 nombre <-names(datos)
 names(datos) <- c("Com","Bom","P","Tr","API","Rg","Reservorio","Pozo")
@@ -66,6 +70,19 @@ for (k in 1:p) {
 # Modelo Regresion Datos de Panel ----------------
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+#Grafico (Datos de Panel)  ---------------------
+library(ggplot2)
+library(plotly)
+grafBom = ggplot(data=datos, aes(x=P, y=Bom, colour=factor(Pozo))) + 
+  geom_line() + geom_point() + ggtitle("Gráfico Pozos")
+ggplotly(grafBom)
+
+grafCom =ggplot(data=datos, aes(x=P, y=Com, colour=factor(Pozo))) + 
+  geom_line() + geom_point()+ ggtitle("Gráfico Pozos")
+ggplotly(grafCom)
+
+
+# Funcion que genera regresión ------------------
 regresionPanel = function(datos,n = 3){
   
   #Formula de orden n
