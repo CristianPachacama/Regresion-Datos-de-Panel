@@ -103,29 +103,40 @@ regresionPanel = function(datos,n = 3){
     betas[i] = modelo$coefficients[i+1]
   }
   #Coeficientes de Factor POZO
-  ind_nomb = endsWith(modelo$coefficientes,suffix = ":P")
-  alfas = modelo$coefficientes[ind_nomb]
+  alfas0 = modelo$coefficients[5:(length(Pozos)-1)]
+  alfas0 = c(0,alfas0)
+  
+  ind_nomb = endsWith(x=names(modelo$coefficients),suffix = ":P")
+  alfas = modelo$coefficients[ind_nomb]
   alfas = c(0,alfas)
+  
   Pozos = unique(datos$Pozo)
   
-  P_aux = datos$P
-  
-  
-  numerador = 0
-  for (j in 1:n) {
-    if(j==1){
-      numerador = numerador + j*betas[j]*(P_aux^(j-1))
-    }else{
-      numerador = numerador + j*betas[j]*(P_aux^(j-1))
-    }
+  numerador= c()
+  for(k in 1:length(Pozos)){
     
+    numerador_aux = 0
+    ind_pozo = datos$Pozo==Pozos[k]
+    P_aux = datos$P[ind_pozo]
+    
+    for (j in 1:n) {
+      if(j==1){
+        numerador_aux = numerador_aux + j*(betas[j]+alfas[k])*(P_aux^(j-1))
+      }else{
+        numerador_aux = numerador_aux + j*betas[j]*(P_aux^(j-1))
+      }
+      
+    }
+    numerador=c(numerador,numerador_aux)
   }
+  
   datos$Coe = -numerador/(datos$Boe)
+  
   
   return(list('datos'=datos,'modelo'=modelo))
 }
 
-
+# remove(analisisPanel)
 #Generacion de Resumen Modelo
 analisisPanel = regresionPanel(datos,n=3)
 datosPanel = analisisPanel$datos
