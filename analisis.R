@@ -121,7 +121,7 @@ regresionPanel = function(datos,n = 3){
     
     for (j in 1:n) {
       if(j==1){
-        numerador_aux = numerador_aux + j*(betas[j]+alfas[k])*(P_aux^(j-1))
+        numerador_aux = numerador_aux + j*(betas[j])*(P_aux^(j-1))+alfas[k]
       }else{
         numerador_aux = numerador_aux + j*betas[j]*(P_aux^(j-1))
       }
@@ -157,7 +157,7 @@ grafPanel = function(datosPanel,n=3){
     plot(datos_aux$P,datos_aux$Bom, xlab = "Presión",ylab = "Bom & Boe")
     lines(datos_aux$P,datos_aux$Boe,col='red')
     
-    plot(datos_aux$P,datos_aux$Com, xlab = "Presión",ylab = "Bom & Boe")
+    plot(datos_aux$P,datos_aux$Com, xlab = "Presión",ylab = "Com & Coe")
     lines(datos_aux$P,datos_aux$Coe,col='red')
     
     mtext(paste("Regresion Polinomial, n=",n),outer = TRUE,cex = 1.5)
@@ -170,10 +170,11 @@ grafPanel(datosPanel)
 
 #####
 
-#Correccion
-datos_aux = datosPanel[datosPanel$Pozo==Pozos[k],]
-datos_aux
+# Regresion Multiple
 
+modelo2 = lm(data=datos, Com ~ P + Tr + Bom + API + Rg)
 
+datos_aux2 = datos
+datos_aux2$Coe = predict(modelo2,datos_aux2)
 
-
+plot(datos_aux2$Com,datos_aux2$Coe)
